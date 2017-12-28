@@ -20,22 +20,22 @@ namespace Blogifier.Core.Data.Repositories
             _db = db;
         }
 
-        public IEnumerable<PostListItem> Find(Expression<Func<BlogPost, bool>> predicate, Pager pager)
+        public async Task<IEnumerable<PostListItem>> FindAsync(Expression<Func<BlogPost, bool>> predicate, Pager pager)
         {
             var skip = pager.CurrentPage * pager.ItemsPerPage - pager.ItemsPerPage;
 
             var drafts = _db.BlogPosts.Include(p => p.Profile)
                 .Where(p => p.Published == DateTime.MinValue).Where(predicate)
-                .OrderByDescending(p => p.LastUpdated).ToList();
+                .OrderByDescending(p => p.LastUpdated);
 
             var pubs = _db.BlogPosts.Include(p => p.Profile)
                 .Where(p => p.Published > DateTime.MinValue).Where(predicate)
-                .OrderByDescending(p => p.Published).ToList();
+                .OrderByDescending(p => p.Published);
 
-            var items = drafts.Concat(pubs).ToList();
-            pager.Configure(items.Count);
+            var items = drafts.Concat(pubs);
+            pager.Configure(await items.CountAsync());
 
-            var postPage = items.Skip(skip).Take(pager.ItemsPerPage).ToList();
+            var postPage = await items.Skip(skip).Take(pager.ItemsPerPage).ToListAsync();
 
             return GetPostItems(postPage);
         }

@@ -99,7 +99,7 @@ namespace Blogifier.Core.Services.Syndication.Rss
             }
         }
 
-        public string Display(string absoluteUri, string author)
+        public async Task<string> DisplayAsync(string absoluteUri, string author)
         {
             IEnumerable<PostListItem> pubs;
 
@@ -113,7 +113,7 @@ namespace Blogifier.Core.Services.Syndication.Rss
 
             if (string.IsNullOrEmpty(author))
             {
-                pubs = _db.BlogPosts.Find(p => p.Published > DateTime.MinValue && p.Published < DateTime.UtcNow, new Pager(1));
+                pubs = await _db.BlogPosts.FindAsync(p => p.Published > DateTime.MinValue && p.Published < DateTime.UtcNow, new Pager(1));
             }
             else
             {
@@ -126,7 +126,7 @@ namespace Blogifier.Core.Services.Syndication.Rss
                     Copyright = "(c) " + DateTime.Now.Year
                 };
 
-                pubs = _db.BlogPosts.Find(p => p.Published > DateTime.MinValue && p.Published < DateTime.UtcNow && p.Profile.Slug == author, new Pager(1));
+                pubs = await _db.BlogPosts.FindAsync(p => p.Published > DateTime.MinValue && p.Published < DateTime.UtcNow && p.Profile.Slug == author, new Pager(1));
             }
 
             foreach (var post in pubs)

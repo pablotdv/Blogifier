@@ -2,6 +2,7 @@
 using Blogifier.Core.Services.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Blogifier.Core.Controllers.Api.Public
 {
@@ -17,17 +18,17 @@ namespace Blogifier.Core.Controllers.Api.Public
 
         // GET blogifier/api/public/posts
         // GET blogifier/api/public/posts?page=2
-        public BlogPostsModel Get(int page = 1)
+        public async Task<BlogPostsModel> Get(int page = 1)
         {
-            return _ds.GetPosts(page, true);
+            return await _ds.GetPostsAsync(page, true);
         }
 
         // GET blogifier/api/public/posts/author/filip-stanek
         // GET blogifier/api/public/posts/author/filip-stanek?page=2
         [HttpGet("[action]/{slug}")]
-        public BlogAuthorModel Author(string slug, int page = 1)
+        public async Task<BlogAuthorModel> Author(string slug, int page = 1)
         {
-            return _ds.GetPostsByAuthor(slug, page, true);
+            return await _ds.GetPostsByAuthorAsync(slug, page, true);
         }
 
         // GET blogifier/api/public/posts/author/category/mobile

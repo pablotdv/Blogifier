@@ -27,12 +27,12 @@ namespace Blogifier.Core.Controllers.Api
         }
 
         [HttpGet]
-        public AdminPostList Index(int page = 1)
+        public async Task<AdminPostList> Index(int page = 1)
         {
             var pager = new Pager(page);
             var model = new AdminPostList();
 
-            model.BlogPosts = _db.BlogPosts.Find(p => p.Profile.IdentityName == User.Identity.Name, pager);
+            model.BlogPosts = await _db.BlogPosts.FindAsync(p => p.Profile.IdentityName == User.Identity.Name, pager);
             model.Pager = pager;
             return model;
         }

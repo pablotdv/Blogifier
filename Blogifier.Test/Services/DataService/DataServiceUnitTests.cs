@@ -26,41 +26,41 @@ namespace Blogifier.Test.Services.DataService
         private readonly Mock<ICategoryRepository> _categoryRepository = new Mock<ICategoryRepository>();
 
         [Fact]
-        public void GetPosts_Page_SmallerThan_1_Returns_Null()
+        public async Task GetPosts_Page_SmallerThan_1_Returns_NullAsync()
         {
             // arrange
             SetupDependencies();
             var sut = GetSut();
 
             // act
-            var result = sut.GetPosts(0);
+            var result = await sut.GetPostsAsync(0);
 
             // assert
             Assert.Null(result);
         }
 
         [Fact]
-        public void GetPosts_WithPager_Returns_AllPosts()
+        public async Task GetPosts_WithPager_Returns_AllPostsAsync()
         {
             // arrange
             SetupDependencies();
             var sut = GetSut();
 
             // act
-            var result = sut.GetPosts(1);
+            var result = await sut.GetPostsAsync(1);
 
             // assert
             Assert.Equal(result.Posts.Count(), 1);
         }
 
         [Fact]
-        public void GetPosts_With_PubEquals_true_AuthorEmail_Is_EmptyString()
+        public async Task GetPosts_With_PubEquals_true_AuthorEmail_Is_EmptyStringAsync()
         {
             // arrange
             SetupDependencies();
             var sut = GetSut();
             // act
-            var result = sut.GetPosts(1, true);
+            var result = await sut.GetPostsAsync(1, true);
 
             // assert
             Assert.Empty(result.Posts.First().AuthorEmail);
@@ -74,49 +74,49 @@ namespace Blogifier.Test.Services.DataService
             var sut = GetSut();
 
             // act
-            var result = sut.GetPostsByAuthor("joe", -1);
+            var result = sut.GetPostsByAuthorAsync("joe", -1);
 
             // assert
             Assert.Null(result);
         }
 
         [Fact]
-        public void GetPostsByAuthor_WithPager_Returns_AllPosts()
+        public async Task GetPostsByAuthor_WithPager_Returns_AllPostsAsync()
         {
             // arrange
             SetupDependencies();
             var sut = GetSut();
 
             // act
-            var result = sut.GetPostsByAuthor("joe", 1);
+            var result = await sut.GetPostsByAuthorAsync("joe", 1);
 
             // assert
             Assert.Equal(result.Posts.Count(), 1);
         }
 
         [Fact]
-        public void GetPostsByAuthor_With_PubEquals_false_AuthorEmail_Is_Not_Empty()
+        public async Task GetPostsByAuthor_With_PubEquals_false_AuthorEmail_Is_Not_EmptyAsync()
         {
             // arrange
             SetupDependencies();
             var sut = GetSut();
 
             // act
-            var result = sut.GetPostsByAuthor("joe", 1);
+            var result = await sut.GetPostsByAuthorAsync("joe", 1);
 
             // assert
             Assert.NotEmpty(result.Posts.First().AuthorEmail);
         }
 
         [Fact]
-        public void GetPostsByAuthor_BlogCategoryModel_IsCreated_WithProvided_Fields()
+        public async Task GetPostsByAuthor_BlogCategoryModel_IsCreated_WithProvided_FieldsAsync()
         {
             // arrange
             SetupDependencies();
             var sut = GetSut();
 
             // act
-            var result = sut.GetPostsByAuthor("joe", 1);
+            var result = await sut.GetPostsByAuthorAsync("joe", 1);
 
             // assert
             Assert.Equal(result.Profile.Id, 1);
@@ -358,11 +358,11 @@ namespace Blogifier.Test.Services.DataService
         private void SetupDependencies()
         {
             _postsRepository
-                .Setup(x => x.Find(It.IsAny<Expression<Func<BlogPost, bool>>>(), It.IsAny<Pager>()))
-                .Returns(new List<PostListItem>
+                .Setup(x => x.FindAsync(It.IsAny<Expression<Func<BlogPost, bool>>>(), It.IsAny<Pager>()))
+                .Returns(Task.FromResult<IEnumerable<PostListItem>>(new List<PostListItem>
                 {
                     new PostListItem { AuthorName = "Joe", Title = "dotnet core" , AuthorEmail = "test@test.com"}
-                });
+                }));
             _postsRepository.Setup(x => x.SingleIncluded(It.IsAny<Expression<Func<BlogPost, bool>>>()))
                 .Returns(Task.FromResult(new BlogPost
                 {

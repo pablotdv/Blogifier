@@ -3,38 +3,39 @@ using Blogifier.Core.Services.Data;
 using Blogifier.Core.Services.Syndication.Rss;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Blogifier.Core.Controllers
 {
     public class BlogController : Controller
-	{
+    {
         IRssService _rss;
         IDataService _ds;
         private readonly ILogger _logger;
         private readonly string _theme;
 
-		public BlogController(IRssService rss, IDataService ds, ILogger<BlogController> logger)
-		{
+        public BlogController(IRssService rss, IDataService ds, ILogger<BlogController> logger)
+        {
             _rss = rss;
             _ds = ds;
             _logger = logger;
             _theme = $"~/{ApplicationSettings.BlogThemesFolder}/{BlogSettings.Theme}/";
         }
 
-        public IActionResult Index(int page = 1)
-        {
-            var model = _ds.GetPosts(page);
-            if (model == null)
-                return View(_theme + "Error.cshtml", 404);
+        public async Task<IActionResult> Index(int page = 1)
+        {            
+            var model = await _ds.GetPostsAsync(page);
+            //if (model == null)
+            //    return View(_theme + "Error.cshtml", 404);
 
             return View(_theme + "Index.cshtml", model);
         }
 
         [Route("{slug:author}")]
-        public IActionResult PostsByAuthor(string slug, int page = 1)
+        public async Task<IActionResult> PostsByAuthor(string slug, int page = 1)
         {
-            var model = _ds.GetPostsByAuthor(slug, page);
-            if(model == null)
+            var model = await _ds.GetPostsByAuthorAsync(slug, page);
+            if (model == null)
                 return View(_theme + "Error.cshtml", 404);
 
             return View($"~/{ApplicationSettings.BlogThemesFolder}/" + model.Profile.BlogTheme + "/Author.cshtml", model);
@@ -54,7 +55,7 @@ namespace Blogifier.Core.Controllers
         public IActionResult PostsByCategory(string slug, string cat, int page = 1)
         {
             var model = _ds.GetPostsByCategory(slug, cat, page);
-            if(model == null)
+            if (model == null)
                 return View(_theme + "Error.cshtml", 404);
 
             return View($"~/{ApplicationSettings.BlogThemesFolder}/" + model.Profile.BlogTheme + "/Category.cshtml", model);
@@ -92,7 +93,7 @@ namespace Blogifier.Core.Controllers
         }
 
         [Route("rss/{slug:author?}")]
-        public IActionResult Rss(string slug)
+        public async Task<IActionResult> Rss(string slug)
         {
             var absoluteUri = string.Concat(
                 Request.Scheme, "://",
@@ -101,7 +102,7 @@ namespace Blogifier.Core.Controllers
 
             var x = slug;
 
-            var rss = _rss.Display(absoluteUri, slug);
+            var rss = await _rss.DisplayAsync(absoluteUri, slug);
             return Content(rss, "text/xml");
         }
 

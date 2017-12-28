@@ -10,7 +10,7 @@ namespace Blogifier.Core.Data.Interfaces
 {
     public interface IPostRepository : IRepository<BlogPost>
     {
-        IEnumerable<PostListItem> Find(Expression<Func<BlogPost, bool>> predicate, Pager pager);
+        Task<IEnumerable<PostListItem>> FindAsync(Expression<Func<BlogPost, bool>> predicate, Pager pager);
         IEnumerable<BlogPost> AllIncluded(Expression<Func<BlogPost, bool>> predicate);
         Task<List<PostListItem>> ByCategory(string slug, Pager pager, string blog = "");
         Task<List<PostListItem>> ByFilter(string status, List<string> categories, string blog, Pager pager);

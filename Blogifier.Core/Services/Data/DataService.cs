@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Blogifier.Core.Services.Data
 {
@@ -21,10 +22,10 @@ namespace Blogifier.Core.Services.Data
             _search = search;
         }
 
-        public BlogPostsModel GetPosts(int page, bool pub = false)
+        public async Task<BlogPostsModel> GetPostsAsync(int page, bool pub = false)
         {
             var pager = new Pager(page);
-            IEnumerable<PostListItem> posts = _db.BlogPosts.Find(p => p.Published > DateTime.MinValue, pager);
+            IEnumerable<PostListItem> posts = await _db.BlogPosts.FindAsync(p => p.Published > DateTime.MinValue, pager);
 
             if (page < 1 || page > pager.LastPage)
                 return null;
@@ -39,11 +40,11 @@ namespace Blogifier.Core.Services.Data
             };
         }
 
-        public BlogAuthorModel GetPostsByAuthor(string auth, int page, bool pub = false)
+        public async Task<BlogAuthorModel> GetPostsByAuthorAsync(string auth, int page, bool pub = false)
         {
             var pager = new Pager(page);
             var profile = _db.Profiles.Single(p => p.Slug == auth);
-            var posts = _db.BlogPosts.Find(p => p.ProfileId == profile.Id && p.Published > DateTime.MinValue, pager);
+            var posts = await _db.BlogPosts.FindAsync(p => p.ProfileId == profile.Id && p.Published > DateTime.MinValue, pager);
 
             if (page < 1 || page > pager.LastPage)
                 return null;
