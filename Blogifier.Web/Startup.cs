@@ -30,7 +30,7 @@ namespace Blogifier
 
         public void ConfigureServices(IServiceCollection services)
         {
-            System.Action<DbContextOptionsBuilder> databaseOptions = options => 
+            System.Action<DbContextOptionsBuilder> databaseOptions = options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
 
             services.AddDbContext<ApplicationDbContext>(databaseOptions);
@@ -64,12 +64,18 @@ namespace Blogifier
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Blog/Error");
+            }
 
             app.UseStaticFiles();
 
             app.UseAuthentication();
 
-            app.UseETagger();
+            //I need this, because in the developer mode the exception page don't appear
+            if (!env.IsDevelopment())
+                app.UseETagger();
 
             app.UseMvc(routes =>
             {

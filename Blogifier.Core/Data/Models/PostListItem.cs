@@ -22,7 +22,7 @@ namespace Blogifier.Core.Data.Models
         public float Rating { get; set; }
         public bool IsFeatured { get; set; }
 
-        public List<string> PostCategories { get; set; }
+        public IEnumerable<string> PostCategories { get; set; }
 
         public bool Equals(PostListItem other)
         {
