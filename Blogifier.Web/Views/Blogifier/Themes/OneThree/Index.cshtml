@@ -31,7 +31,7 @@
                                 <span class="post-meta-author">@item.AuthorName</span>
                             </a>
                             <time class="post-meta-time">@item.Published.ToFriendlyDateString()</time>
-                            @if (item.PostCategories != null && item.PostCategories.Count > 0)
+                            @if (item.PostCategories != null && item.PostCategories.Count() > 0)
                             {
                                 <span class="post-meta-category">
                                     in
